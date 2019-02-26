@@ -1,18 +1,18 @@
 #include "tp1.h"
 
 /* ------------------------------------------------------------------
- * InsererElt	Insere un element dans la liste après le prec 
+ * InsererElt	Insere un element dans la liste apres le prec 
  * 
  * En entree : - un pointeur de pointeur prec sur un message_t, 
- * indiquant la position où insérer.
+ * indiquant la position a inserer.
  * 			   - un pointeur sur un message_t, nouv, 
- * l'élément à insérer.
+ * l'element a� inserer.
  *
- * Interne : - un pointeur sur un message_t temp utilisé comme variable
+ * Interne : - un pointeur sur un message_t temp utilise comme variable
  * temporaire pour l'insertion.
  * 
- * Stratégie : Affectation de prec dans une variable temporaire, de nouv
- * dans la variable pointée dans prec, puis de temp dans le suivant de
+ * Strategie : Affectation de prec dans une variable temporaire, de nouv
+ * dans la variable pointee dans prec, puis de temp dans le suivant de
  * nouv.
  * -----------------------------------------------------------------*/
 void InsererElt (message_t ** prec, message_t *nouv)
@@ -22,6 +22,24 @@ void InsererElt (message_t ** prec, message_t *nouv)
 	nouv->suiv = temp;
 }
 
+/* ------------------------------------------------------------------
+ * CreerCell	Alloue une nouvelle cellule et en remplit les informations
+ * 
+ * En entree : - un entier pour la date de reception
+ *			   - un entier pour la date de peeremption
+ * 			   - le texte du message 
+ *
+ * Interne : - un pointeur sur un message_t nouv correspondant a la nouvelle
+ * cellule allou�e
+ * 
+ * Strategie : Initialisation et allocation d'un pointeur sur une nouvelle 
+ * cellule.
+ *		Si l'allocation s'est bien pass�e, on remplit les informations de la
+ * cellule, avec une allocation dynamique pour la taille du texte. met le bloc
+ * suivant a NULL et on retourne nouv, ou NULL si l'allocation a echoue.
+ * 
+ * Sortie : pointeur sur la cellule nouvellement alloue, ou NULL.
+ * -----------------------------------------------------------------*/
 message_t *CreerCell (int deb, int fin, char * texte)
 {
 	message_t * nouv =(message_t *)malloc(sizeof(message_t));
@@ -36,7 +54,25 @@ message_t *CreerCell (int deb, int fin, char * texte)
 	return nouv;
 }
 	
-message_t ** recherche_Prec(message_t ** liste, message_t * elt)
+/* ------------------------------------------------------------------
+ * RecherchePrec	Recherche et renvoie un pointeur sur pointeur du precedent de
+ * l element recherche.
+ * 
+ * En entree : - un pointeur sur pointeur de la liste
+ *			   - un pointeur sur l element recherche
+ *
+ * Interne : - cour, un pointeur sur message_t de parcours de liste
+ * - prec, pointeur de pointeur sur l element precedent 
+ * 
+ * Strategie : Initialisation des pointeurs de parcours, puis parcours
+ * tant que la liste n'est pas terminee et que la date de debut de l
+ * element courant n est pas superieure a celle de l element recherche,
+ * on deplace cour et prec. Finalement, on retourne prec.
+ * 
+ * Sortie : pointeur sur pointeur sur message_t du precedent de
+ * l element recherche.
+ * -----------------------------------------------------------------*/
+message_t ** RecherchePrec(message_t ** liste, message_t * elt)
 {
 	message_t ** prec = liste;
 	message_t * cour = * liste; 
@@ -48,10 +84,31 @@ message_t ** recherche_Prec(message_t ** liste, message_t * elt)
 	return prec ;
 }	
 
+
+/* ------------------------------------------------------------------
+ * fgetsp	: fgets modifie s'assurant que le message se termine  a
+ * la fin de la ligne.
+ * 
+ * En entree : - une chaine de caracteres comprenant le texte du message
+ *			   - la taille initiale du message
+ *			   - un pointeur sur le fichier ouvert
+ *
+ * Interne : - 
+ * 
+ * Strategie : lecture du texte, puis troncage � la fin de la ligne.
+ * 
+ * Sortie : Texte du message lu, tronque.
+ * -----------------------------------------------------------------*/
 char * fgetsp(char *s, int size, FILE * fichier)
 {
+//	char *c;
 	fgets(s, size, fichier);
 	//ViderBuffer(fichier);
+/*	if(strchr(s,"\n")==NULL){
+		printf("Long");
+		fscanf(c,"%*c");
+	}
+	else s[strcspn(s, "\n")]=0;*/
 	s[strcspn(s, "\n")]=0;
 	return s;
 } 
@@ -82,7 +139,7 @@ void CreerLch (char * nom, message_t ** liste)
 				fgetsp(texte,101,fichier);
 				nouv = CreerCell(db,df,texte);
 				nouv->suiv=NULL;
-				InsererElt(recherche_Prec(liste, nouv),nouv);
+				InsererElt(RecherchePrec(liste, nouv),nouv);
 				fscanf(fichier,"%d %d ",&db, &df);
 				
 		}
@@ -91,7 +148,7 @@ void CreerLch (char * nom, message_t ** liste)
 	else liste = NULL;
 }
 
-void afficher(message_t * liste){
+void Afficher(message_t * liste){
 	int compteur=1;
 	message_t *cour;
 	cour = liste;
@@ -104,7 +161,7 @@ void afficher(message_t * liste){
 } 
 
 
-void afficherNonExpire(message_t * liste){
+void AfficherNonExpire(message_t * liste){
 	message_t *cour;
 	cour = liste;
 	printf("\nMessages non expires:\n");
@@ -126,7 +183,7 @@ int Date(){
 	return date;
 }
 
-void sauvegarde(message_t *liste){
+void Sauvegarde(message_t *liste){
 	message_t *cour=liste;
 	FILE * sauvegarde;
 	sauvegarde=fopen("test.txt","w");
@@ -203,38 +260,21 @@ void AfficheSiMotif (message_t * lch, char * motif)
 
 
 int main(int argc, char * argv[]){
-	
-	/*liste->ddebut=19990520;
-	liste->dfin=20190520;
-	
-	InsererElt (liste, CreerCell(20040223,20240223,"Bonjour"));
-	sauvegarde(liste);
-	free(liste);*/
 	message_t *lch = NULL;
-	//lch = NULL;
 	if(argc>1) {
-
 		CreerLch (argv[1], &lch);
-		afficher(lch);
+		Afficher(lch);
 		
-		afficherNonExpire(lch);
-		
-		//printf("\nSuppression des messages expires :\n");
-		//SupprimerObsoletes(&lch);
-		//afficher(lch);
-		
+		AfficherNonExpire(lch);
+				
 		ChangerDate(lch, 0,20190221);
-		afficher(lch);
+		Afficher(lch);
 		
-		//AfficheSiMotif(lch, "ooooo");
-		
-		sauvegarde (lch);
+		Sauvegarde (lch);
 		free(lch);
 	}
 	else printf("Veuillez preciser un nom de fichier\n");
-	/*printf("Affichage : %d %d \n",lch->ddebut,lch->dfin);
-	printf("Affichage : %s %p \n",lch->texte,lch->suiv);*/
-
+	
 	return 0;
 }
 

@@ -19,16 +19,16 @@ typedef struct message{
 
 void InsererElt (message_t ** prec, message_t *nouv);
 message_t *CreerCell (int deb, int fin, char * texte);
-message_t ** recherche_Prec(message_t ** liste, message_t * elt);
+message_t ** RecherchePrec(message_t ** liste, message_t * elt);
 char * fgetsp (char *s, int size, FILE * fichier);
 void ViderBuffer(FILE *f);
 
 void CreerLch(char * nom, message_t ** liste);
-void afficher(message_t * liste);
+void Afficher(message_t * liste);
 
-void afficherNonExpire(message_t * liste);
+void AfficherNonExpire(message_t * liste);
 int Date();
-void sauvegarde(message_t *liste);
+void Sauvegarde(message_t *liste);
 
 bool EstExpire(message_t * mes);
 void SupCell (message_t ** prec);
