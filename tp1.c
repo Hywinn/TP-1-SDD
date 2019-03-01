@@ -247,13 +247,36 @@ void ChangerDate (message_t * lch, int viei, int nouv)
 // la partie 4
 void AfficheSiMotif (message_t * lch, char * motif)
 {
-	message_t * cour;
+	message_t * cour=lch;
 	printf( "Les messages contenant le motif: %s\n", motif);
-	while (cour != NULL)
-	{
-		if (strcmp(motif, cour->texte)) // pas trop sur
-		     printf( "%s \n", cour->texte);
+	while( cour !=NULL ){
+		if(RechMotif(cour->texte,motif)){
+			printf( "Date de reception : %d\nDate de peremption : %d\nTexte : %s\n",cour->ddebut,cour->dfin,cour->texte);
+		}
+		cour = cour->suiv;
 	}
+	
+}
+
+int RechMotif(char * texte, char * motif){
+	int res=0;
+    while(*texte && res==0 ) // tant que non fin chaine et non trouve
+	{
+			char *deb = texte;		//copie des pointeurs pour parcours
+			char *comp = motif;
+		    
+		    // Si les caracteres sont identiques, on compare la suite au motif
+		    while (*texte && *comp && *texte == *comp) //tant que non fin chaines et caracteres identiques
+			{
+			      texte++;
+			      comp++;
+		    }
+		    // si la chaine est identique, on retourne 1
+		    if (!*comp) res=1;	  
+		    texte = deb + 1;
+	  }
+	  //Sinon 0
+	  return res;
 }
 
 
@@ -269,6 +292,9 @@ int main(int argc, char * argv[]){
 				
 		ChangerDate(lch, 0,20190221);
 		Afficher(lch);
+		
+		AfficheSiMotif (lch, "Charlemagne");
+		AfficheSiMotif (lch, "Charlemane");
 		
 		Sauvegarde (lch);
 		free(lch);

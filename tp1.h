@@ -37,6 +37,5 @@ void SupprimerObsoletes(message_t ** lch);
 
 void ChangerDate (message_t * lch, int viei, int nouv);
 void AfficheSiMotif (message_t * lch, char * motif);
-
-
+int RechMotif(char * texte, char * motif);
 
