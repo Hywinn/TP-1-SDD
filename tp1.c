@@ -95,7 +95,7 @@ message_t ** RecherchePrec(message_t ** liste, message_t * elt)
  *
  * Interne : - 
  * 
- * Strategie : lecture du texte, puis troncage � la fin de la ligne.
+ * Strategie : lecture du texte, puis troncage a la fin de la ligne.
  * 
  * Sortie : Texte du message lu, tronque.
  * -----------------------------------------------------------------*/
@@ -122,11 +122,29 @@ char * fgetsp(char *s, int size, FILE * fichier)
     }
 }*/
 	
+/* ------------------------------------------------------------------
+ * CreerLch	: permet si le fichier s'ouvre sans erreur de prendre les informations du fichier 
+ * et les mettre ligne par ligne dans des blocs d'une liste chainee
+ * 
+ * En entree : - le fichier à ouvrir, en format texte, contenant les messages 
+ * 			   - le pointeur sur la tête de la liste chainee
+ *
+ * Interne :(fichier, db, df, texte, c, nouv) - fichier qui est un pointeur sur le fichier ouvert
+ * 			-db est un entier correspondant à la date de début de la ligne en cours de traitement	
+ * 			-df est un entier correspondant à la date de fin de la ligne en cours de traitement
+ * 			-texte qui est la chaine de caractère de talle fixe correspondant au texte du messge(ligne) en cours de traitement
+ * 			-nouv pointeur sur un bloc de type message_t 
+ * Strategie : on ouvre le fichier, on récupère les informations du fichier, ligne par ligne, 
+ * 
+ * 
+ * 
+ * Sortie : La liste chainée remplie avec le contenu du message texte.
+ * -----------------------------------------------------------------*/
 void CreerLch (char * nom, message_t ** liste)
 {
 	FILE * fichier;
 	int db, df;
-	char texte[101]; //Possible d'allouer dynamiquement
+	char texte[101];
 	char *c;  
 	fichier=fopen(nom,"r");
 	if(fichier)
@@ -148,6 +166,22 @@ void CreerLch (char * nom, message_t ** liste)
 	else liste = NULL;
 }
 
+
+/* ------------------------------------------------------------------
+ * Afficher	: Affiche la liste des messages
+ * 
+ * En entree : 
+ * 			   - la liste des messages
+ *
+ * Interne :-compteur entier servant a compter le nombre de messages
+ * 			-cour pointeur de parcours sur un bloc de type message_t 
+ *
+ * Strategie : Apres initialisation de cour, parcours jusqu a la fin de
+ * la liste avec decompte des messages et affichage des dates de reception,
+ * peremption et du texte. Deplacement du pointeur, incrementation du compteur
+ * et affichage de l element suivant.
+ * 
+ * -----------------------------------------------------------------*/
 void Afficher(message_t * liste){
 	int compteur=1;
 	message_t *cour;
