@@ -6,7 +6,7 @@
  * En entree : - un pointeur de pointeur prec sur un message_t, 
  * indiquant la position a inserer.
  * 			   - un pointeur sur un message_t, nouv, 
- * l'element a  inserer.
+ * l'element a inserer.
  *
  * Interne : - un pointeur sur un message_t temp utilise comme variable
  * temporaire pour l'insertion.
@@ -17,7 +17,8 @@
  * -----------------------------------------------------------------*/
 void InsererElt (message_t ** prec, message_t *nouv)
 {
-	message_t * temp = *prec;
+	message_t	 *	 temp = *prec;
+
 	*prec = nouv;
 	nouv->suiv = temp;
 }
@@ -30,11 +31,11 @@ void InsererElt (message_t ** prec, message_t *nouv)
  * 			   - le texte du message 
  *
  * Interne : - un pointeur sur un message_t nouv correspondant a la nouvelle
- * cellule allouée
+ * cellule allouï¿½e
  * 
  * Strategie : Initialisation et allocation d'un pointeur sur une nouvelle 
  * cellule.
- *		Si l'allocation s'est bien passée, on remplit les informations de la
+ *		Si l'allocation s'est bien passï¿½e, on remplit les informations de la
  * cellule, avec une allocation dynamique pour la taille du texte. met le bloc
  * suivant a NULL et on retourne nouv, ou NULL si l'allocation a echoue.
  * 
@@ -42,13 +43,15 @@ void InsererElt (message_t ** prec, message_t *nouv)
  * -----------------------------------------------------------------*/
 message_t *CreerCell (int deb, int fin, char * texte)
 {
-	message_t * nouv =(message_t *)malloc(sizeof(message_t));
+	message_t 	*	 nouv =(message_t *)malloc(sizeof(message_t));
+
 	if (nouv)
 	{ 
 		nouv->ddebut = deb;
 		nouv->dfin = fin;
 		nouv->texte=(char*)malloc(strlen(texte)*sizeof(char));
-		if(nouv->texte) strcpy(nouv->texte,texte);
+		if(nouv->texte) 
+			strcpy(nouv->texte,texte);
 		nouv->suiv=NULL;
 	}
 	return nouv;
@@ -74,9 +77,10 @@ message_t *CreerCell (int deb, int fin, char * texte)
  * -----------------------------------------------------------------*/
 message_t ** RecherchePrec(message_t ** liste, message_t * elt)
 {
-	message_t ** prec = liste;
-	message_t * cour = * liste; 
-	while (cour !=NULL && cour->ddebut < elt->ddebut) 
+	message_t 	** 	prec = liste;
+	message_t	*	cour = *liste; 
+
+	while (cour!=NULL && cour->ddebut < elt->ddebut) 
 	{
 		prec = &cour->suiv;
 		cour = cour->suiv; 
@@ -142,11 +146,13 @@ char * fgetsp(char *s, int size, FILE * fichier)
  * -----------------------------------------------------------------*/
 void CreerLch (char * nom, message_t ** liste)
 {
-	FILE * fichier;
-	int db, df;
-	char texte[101];
-	char *c;  
-	fichier=fopen(nom,"r");
+	FILE	*	fichier;
+	int 		db;
+	int 		df;
+	char 		texte[101];
+	//char 	*	c;
+
+	fichier = fopen(nom,"r");
 	if(fichier)
 	{
 		message_t *nouv;
@@ -182,11 +188,14 @@ void CreerLch (char * nom, message_t ** liste)
  * et affichage de l element suivant.
  * 
  * -----------------------------------------------------------------*/
-void Afficher(message_t * liste){
-	int compteur=1;
-	message_t *cour;
+void Afficher(message_t * liste)
+{
+	int 			compteur = 1;
+	message_t	*	cour;
+
 	cour = liste;
-	while( cour !=NULL ){
+	while( cour!=NULL )
+	{
 		printf("\nMessage no %d: \n",compteur);
 		printf( "Date de reception : %d\nDate de peremption : %d\nTexte : %s\n",cour->ddebut,cour->dfin,cour->texte);
 		cour = cour->suiv;
@@ -195,34 +204,41 @@ void Afficher(message_t * liste){
 } 
 
 
-void AfficherNonExpire(message_t * liste){
-	message_t *cour;
+void AfficherNonExpire(message_t * liste)
+{
+	message_t	*	cour;
+
 	cour = liste;
 	printf("\nMessages non expires:\n");
-	while( cour !=NULL ){
-		if(!EstExpire(cour)){
+	while( cour !=NULL )
+	{
+		if(!EstExpire(cour))
+		{
 		printf( "Date de reception : %d\nDate de peremption : %d\nTexte : %s\n",cour->ddebut,cour->dfin,cour->texte);
 		}
 		cour = cour->suiv;
 	}
 } 
 
-int Date(){
-	time_t t = time(NULL);
-	struct tm tm = *localtime(&t);	//Initialise le temps
-	int date = (tm.tm_year+1900)*10000+(tm.tm_mon+1)*100+tm.tm_mday;	//Calcule au format demandï¿½
-	
+int Date()
+{
+	time_t		t = time(NULL);
+	struct tm 	tm = *localtime(&t);	//Initialise le temps
+	int 		date = (tm.tm_year+1900)*10000+(tm.tm_mon+1)*100+tm.tm_mday;	//Calcule au format demande
 	//printf("now: %d\n", date);	
-	
 	return date;
 }
 
-void Sauvegarde(message_t *liste){
-	message_t *cour=liste;
-	FILE * sauvegarde;
+void Sauvegarde(message_t *liste)
+{
+	message_t	*	cour=liste;
+	FILE	*	sauvegarde;
+
 	sauvegarde=fopen("test.txt","w");
-	if(sauvegarde){
-		while(cour != NULL){
+	if(sauvegarde)
+	{
+		while(cour != NULL)
+		{
 			fprintf(sauvegarde,"%d %d %s",cour->ddebut,cour->dfin,cour->texte);
 			cour=cour->suiv;
 		}
@@ -242,36 +258,34 @@ bool EstExpire(message_t * mes)
 		 
 void SupCell (message_t ** prec)
 {
-	message_t * cour = * prec;
+	message_t	*	cour = * prec;
+
 	* prec = cour->suiv;
 	free(cour); 
 }
 
 void SupprimerObsoletes(message_t ** lch)
 { 
-    message_t * cour=*lch;
-	message_t ** prec=lch;
-
-	
+    message_t	*	cour=*lch;
+	message_t	**	prec=lch;
 
   	while (cour != NULL )
     {
-    	if(cour->dfin < Date()){
+    	if(cour->dfin < Date())
         	SupCell(prec);
-        }
-        else{
-        	prec = &cour->suiv;
-		}
+        else
+		    prec = &cour->suiv;
 		cour = *prec;
-
     }
 }
 
 
 void ChangerDate (message_t * lch, int viei, int nouv)
 {
-	message_t * cour = lch;
-	while (cour != NULL && cour->ddebut <= viei){
+	message_t	*	cour = lch;
+
+	while (cour != NULL && cour->ddebut <= viei)
+	{
 		if (cour->ddebut == viei)
 			cour->ddebut = nouv;
 		cour = cour->suiv;
@@ -281,10 +295,13 @@ void ChangerDate (message_t * lch, int viei, int nouv)
 // la partie 4
 void AfficheSiMotif (message_t * lch, char * motif)
 {
-	message_t * cour=lch;
+	message_t	*	cour=lch;
+
 	printf( "Les messages contenant le motif: %s\n", motif);
-	while( cour !=NULL ){
-		if(RechMotif(cour->texte,motif)){
+	while( cour !=NULL )
+	{
+		if(RechMotif(cour->texte,motif))
+		{
 			printf( "Date de reception : %d\nDate de peremption : %d\nTexte : %s\n",cour->ddebut,cour->dfin,cour->texte);
 		}
 		cour = cour->suiv;
@@ -292,12 +309,14 @@ void AfficheSiMotif (message_t * lch, char * motif)
 	
 }
 
-int RechMotif(char * texte, char * motif){
-	int res=0;
-    while(*texte && res==0 ) // tant que non fin chaine et non trouve
+int RechMotif(char * texte, char * motif)
+{
+	int 	res = 0;
+
+    while(* texte && res == 0 ) // tant que non fin chaine et non trouve
 	{
-			char *deb = texte;		//copie des pointeurs pour parcours
-			char *comp = motif;
+			char	*	deb = texte;		//copie des pointeurs pour parcours
+			char	*	comp = motif;
 		    
 		    // Si les caracteres sont identiques, on compare la suite au motif
 		    while (*texte && *comp && *texte == *comp) //tant que non fin chaines et caracteres identiques
@@ -316,9 +335,12 @@ int RechMotif(char * texte, char * motif){
 
 
 
-int main(int argc, char * argv[]){
-	message_t *lch = NULL;
-	if(argc>1) {
+int main(int argc, char * argv[])
+{
+	message_t	*	lch = NULL;
+
+	if(argc>1) 
+	{
 		CreerLch (argv[1], &lch);
 		Afficher(lch);
 		
@@ -333,7 +355,8 @@ int main(int argc, char * argv[]){
 		Sauvegarde (lch);
 		free(lch);
 	}
-	else printf("Veuillez preciser un nom de fichier\n");
+	else 
+	printf("Veuillez preciser un nom de fichier\n");
 	
 	return 0;
 }
