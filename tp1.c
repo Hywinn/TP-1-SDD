@@ -12,7 +12,7 @@
  * temporaire pour l'insertion.
  * 
  * Strategie : Affectation de prec dans une variable temporaire, de nouv
- * dans la variable pointee dans prec, puis de temp dans le suivant de
+  * dans la variable pointee dans prec, puis de temp dans le suivant de
  * nouv.
  * -----------------------------------------------------------------*/
 void InsererElt (message_t ** prec, message_t *nouv)
@@ -90,15 +90,13 @@ message_t ** RecherchePrec(message_t ** liste, message_t * elt)
 
 
 /* ------------------------------------------------------------------
- * fgetsp	: fgets modifie s'assurant que le message se termine  a
- * la fin de la ligne.
+ * fgetsp	: fonction fgets modifie pour enlever le marqueur de changement de ligne
+ * //s assurer que le message se termine a la fin de la ligne.
  * 
  * En entree : - une chaine de caracteres comprenant le texte du message
  *			   - la taille initiale du message
  *			   - un pointeur sur le fichier ouvert
  *
- * Interne : - 
- * 
  * Strategie : lecture du texte, puis troncage a la fin de la ligne.
  * 
  * Sortie : Texte du message lu, tronque.
@@ -126,24 +124,28 @@ char * fgetsp(char *s, int size, FILE * fichier)
     }
 }*/
 	
-/* ------------------------------------------------------------------
+/* --------------------------------------------------------------------------------------------
  * CreerLch	: permet si le fichier s'ouvre sans erreur de prendre les informations du fichier 
- * et les mettre ligne par ligne dans des blocs d'une liste chainee
+ * et les mettre ligne par ligne dans des blocs d'une liste chainee en les triants par date de 
+ * début.
  * 
  * En entree : - le fichier à ouvrir, en format texte, contenant les messages 
  * 			   - le pointeur sur la tête de la liste chainee
  *
- * Interne :(fichier, db, df, texte, c, nouv) - fichier qui est un pointeur sur le fichier ouvert
- * 			-db est un entier correspondant à la date de début de la ligne en cours de traitement	
- * 			-df est un entier correspondant à la date de fin de la ligne en cours de traitement
- * 			-texte qui est la chaine de caractère de talle fixe correspondant au texte du messge(ligne) en cours de traitement
- * 			-nouv pointeur sur un bloc de type message_t 
- * Strategie : on ouvre le fichier, on récupère les informations du fichier, ligne par ligne, 
+ * Interne : - fichier, pointeur sur le fichier ouvert
+ * 			 - db, entier correspondant à la date de début de la ligne en cours de traitement	
+ * 			 - df, entier correspondant à la date de fin de la ligne en cours de traitement
+ * 			 - texte, chaine de caractère de taille fixe correspondant au texte du message en cours 
+ * de traitement
+ * 			 - nouv, pointeur sur un bloc de type message_t
+ *  
+ * Strategie : on ouvre le fichier, on récupère, ligne par ligne, les informations du fichier 
+ * pour les placer au bon endroit dans la liste chainee en utilisant le recherche prec, on cree 
+ * un nouveau bloc à chaque ligne du fichier.
  * 
- * 
- * 
- * Sortie : La liste chainée remplie avec le contenu du message texte.
- * -----------------------------------------------------------------*/
+ * Sortie : La liste chainée remplie avec le contenu du fichier texte les étant trié par date 
+ * de début (db).
+ * --------------------------------------------------------------------------------------------*/
 void CreerLch (char * nom, message_t ** liste)
 {
 	FILE	*	fichier;
@@ -155,7 +157,7 @@ void CreerLch (char * nom, message_t ** liste)
 	fichier = fopen(nom,"r");
 	if(fichier)
 	{
-		message_t *nouv;
+		message_t	*	nouv;
 		
 		fscanf(fichier,"%d %d ",&db, &df);
 		while(!feof(fichier))
@@ -176,16 +178,16 @@ void CreerLch (char * nom, message_t ** liste)
 /* ------------------------------------------------------------------
  * Afficher	: Affiche la liste des messages
  * 
- * En entree : 
- * 			   - la liste des messages
+ * En entree :- la liste des messages
  *
- * Interne :-compteur entier servant a compter le nombre de messages
- * 			-cour pointeur de parcours sur un bloc de type message_t 
+ * Interne : - compteur, entier servant a compter le nombre de messages
+ * 			 - cour, pointeur de parcours sur un bloc de type message_t 
  *
  * Strategie : Apres initialisation de cour, parcours jusqu a la fin de
- * la liste avec decompte des messages et affichage des dates de reception,
- * peremption et du texte. Deplacement du pointeur, incrementation du compteur
- * et affichage de l element suivant.
+ * la liste avec:-decompte des messages
+ * 				 -affichage des dates de reception, de peremption et du texte. 
+ * //Deplacement du pointeur vers le bloc suivant et incrementation du compteur
+ * //et affichage de l element suivant.
  * 
  * -----------------------------------------------------------------*/
 void Afficher(message_t * liste)
@@ -203,7 +205,18 @@ void Afficher(message_t * liste)
 	}
 } 
 
-
+/* ------------------------------------------------------------------
+ * AfficherNonExpire: procédure permettant d'afficher les différents messages non expirés a la date 
+ * du lancement du programme (ou a la date de compilation //je ne sais pas).
+ * 
+ * En entree : - un pointeur sur un bloc de type message_t correspondant a la liste chainee a traiter
+ *
+ * Interne : - cour, pointeur qui va permettre de traiter un a un tous les blocs de la liste
+ * 
+ * Strategie : Parcourir la liste chainee en comparant a chaque fois la date de fin du message et celle de l'ordinateur 
+ * et en affichant que les messages dont la date de fin est plus tard. Pour cela utilisation la fonction est expire.
+ * 
+ * -----------------------------------------------------------------*/
 void AfficherNonExpire(message_t * liste)
 {
 	message_t	*	cour;
@@ -213,18 +226,18 @@ void AfficherNonExpire(message_t * liste)
 	while( cour !=NULL )
 	{
 		if(!EstExpire(cour))
-		{
-		printf( "Date de reception : %d\nDate de peremption : %d\nTexte : %s\n",cour->ddebut,cour->dfin,cour->texte);
-		}
+			printf( "Date de reception : %d\nDate de peremption : %d\nTexte : %s\n",cour->ddebut,cour->dfin,cour->texte);
 		cour = cour->suiv;
 	}
 } 
+
+
 
 int Date()
 {
 	time_t		t = time(NULL);
 	struct tm 	tm = *localtime(&t);	//Initialise le temps
-	int 		date = (tm.tm_year+1900)*10000+(tm.tm_mon+1)*100+tm.tm_mday;	//Calcule au format demande
+	int 		date = (tm.tm_year + 1900) * 10000 + (tm.tm_mon + 1) * 100 + tm.tm_mday;	//Calcule au format demande
 	//printf("now: %d\n", date);	
 	return date;
 }
@@ -249,7 +262,18 @@ void Sauvegarde(message_t *liste)
 
 // voici la suite (phase3)
 
+/* ------------------------------------------------------------------
+ * EstExpire: fonction bouleenne indiquant si le message etudie
+ *  a une date de fin inferieure a la date de de lancement du programme. // si j ai bien compris
+ * 
+ * En entree : - pointeur sur un bloc de type message_t correspondant au message que l on veut evaluer
 
+ * Strategie : on utilise la fonction date pour nous donner la date actuelle et on la compare a celle
+ *du message etudie
+ * 
+ * Sortie : 1 si le message est expire.
+ * 			0 sinon. 
+ * -----------------------------------------------------------------*/
 bool EstExpire(message_t * mes)
 {
 	return (Date()>mes->dfin);
